@@ -7,6 +7,7 @@ import (
 	"os"
 	"ketang/netWork/0604_Socket/Tool"
 	"encoding/json"
+	"goDemo/ChatRoom/config"
 )
 
 const(
@@ -24,7 +25,7 @@ type Mess struct {
 
 func main()  {
 
-	conn, err :=net.Dial("tcp", Tool.GetLocalIp()+ ":12345")
+	conn, err :=net.Dial("tcp", Tool.GetLocalIp()+ ":"+config.NetPort)
 	if goExt.CheckErr(err) {
 		return
 	}
@@ -89,9 +90,9 @@ func main()  {
 		var m = make(map[string]string)
 
 		mes := str[:n]
-		if string(mes) == "userLists" {
+		if string(mes) == "userLists\n" {
 			 m["act"] = "userLists"
-		} else if string(mes) == "allUsers" {
+		} else if string(mes) == "allUsers\n" {
 			m["act"] = "allUsers"
 		} else {
 			m["act"] = "message"
@@ -151,7 +152,7 @@ func login(conn net.Conn) (bool, string) {
 			err = json.Unmarshal(buf[:n], &M)
 			var mes = M["message"]
 			res := false
-			if  M["code"] == 1{
+			if  M["code"].(float64) == float64(1){
 				res = true
 			}
 			return res, mes.(string)
@@ -196,7 +197,7 @@ func register(conn net.Conn) (bool, string) {
 			err = json.Unmarshal(buf[:n], &M)
 			var mes = M["message"]
 			res := false
-			if  M["code"] == 1{
+			if  M["code"].(float64) == float64(1){
 				res = true
 			}
 			return res, mes.(string)

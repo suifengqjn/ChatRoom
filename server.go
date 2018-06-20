@@ -7,10 +7,9 @@ import (
 	"io"
 	"time"
 	"encoding/json"
-	"goDemo/Chat/server"
+	"goDemo/ChatRoom/server"
+	"goDemo/ChatRoom/config"
 )
-
-const ChatPort  = "12345"
 
 const (
 	Register = 1
@@ -120,12 +119,12 @@ func handleConn(conn net.Conn)  {
 			case "userLists":
 				conn.Write([]byte("user list:\n"))
 				for _, v := range onlineMap {
-					conn.Write([]byte(v.Username+"\n"))
+					conn.Write([]byte(v.Address +"   " + v.Username+"\n"+"-----------------\n"))
 				}
 			case "allUsers":
 				conn.Write([]byte("user list:\n"))
 				for _, v := range registerMap {
-					conn.Write([]byte(v.Username+"\n"))
+					conn.Write([]byte(v.Address +"   "+ v.Username+"\n"+"-----------------\n"))
 				}
 			default:
 
@@ -145,7 +144,7 @@ func handleConn(conn net.Conn)  {
 			message <- makeMsg(cli,"logout")
 			return
 		case <- hasData:
-		case <- time.After(time.Second * 120): //60秒超时处理
+		case <- time.After(time.Second * config.LimitTimeout):
 			delete(onlineMap, cli.Address)
 			message <- makeMsg(cli,"time out,请重新登入")
 			return 
@@ -164,7 +163,7 @@ func makeMsg(cli server.Client, msg string) string  {
 
 func main() {
 
-	listner,err := net.Listen("tcp",":"+ ChatPort)
+	listner,err := net.Listen("tcp",":"+ config.NetPort)
 	if goExt.CheckErr(err) {
 		return
 	}
