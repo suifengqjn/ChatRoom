@@ -48,7 +48,7 @@ func Manager()  {
 func writeMsgToClient(cli server.Client, conn net.Conn)  {
 
 	for msg := range cli.C {
-		conn.Write([]byte(cli.Username+" : " + msg + "\n"))
+		conn.Write([]byte(msg))
 	}
 }
 
@@ -156,7 +156,7 @@ func handleConn(conn net.Conn)  {
 }
 
 func makeMsg(cli server.Client, msg string) string  {
-	buf := "[" + cli.Username + "]" + msg + "\n"
+	buf := "[" + cli.Username + "]: " + msg + "\n"
 	return buf
 
 }

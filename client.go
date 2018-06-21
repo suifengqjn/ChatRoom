@@ -10,29 +10,30 @@ import (
 	"goDemo/ChatRoom/config"
 )
 
-const(
-	singleChat = 1
-	roomChat = 2
-)
+//const (
+//	systemMes  = 1
+//	singleChat = 2
+//	roomChat   = 3
+//)
 
 var chatType int
 
 type Mess struct {
-	code int	`code`
-	mess string `message`
+	Code    int    `code`
+	Message string `message`
+	Type    int    `type` // 消息类型  1：系统消息 2： 私聊信息 3：聊天室消息
 }
 
+func main() {
 
-func main()  {
-
-	conn, err :=net.Dial("tcp", Tool.GetLocalIp()+ ":"+config.NetPort)
+	conn, err := net.Dial("tcp", Tool.GetLocalIp()+":"+config.NetPort)
 	if goExt.CheckErr(err) {
 		return
 	}
 	var ty string
 
-
-	start: for {
+start:
+	for {
 		fmt.Println("1:登入  2:注册")
 		fmt.Scanln(&ty)
 		if ty == "1" {
@@ -45,8 +46,7 @@ func main()  {
 				goto start
 			}
 
-
-		} else if ty == "2"{
+		} else if ty == "2" {
 			v, msg := register(conn)
 			fmt.Println(msg)
 			if v {
@@ -61,10 +61,10 @@ func main()  {
 
 	defer conn.Close()
 	//接受服务器数据
-	go func(){
+	go func() {
 
 		buf := make([]byte, 1024)
-		for{
+		for {
 			n, err := conn.Read(buf)
 			if err != nil {
 				fmt.Println("read server data err:", err.Error())
@@ -91,7 +91,7 @@ func main()  {
 
 		mes := str[:n]
 		if string(mes) == "userLists\n" {
-			 m["act"] = "userLists"
+			m["act"] = "userLists"
 		} else if string(mes) == "allUsers\n" {
 			m["act"] = "allUsers"
 		} else {
@@ -100,14 +100,12 @@ func main()  {
 		}
 		byteMes, _ := json.Marshal(m)
 		_, err = conn.Write(byteMes)
-		if  err != nil{
+		if err != nil {
 			fmt.Println("send message err:", err.Error())
 		}
 	}
 
-
 }
-
 
 // 登入并且接受服务器返回的结果
 func login(conn net.Conn) (bool, string) {
@@ -135,30 +133,25 @@ func login(conn net.Conn) (bool, string) {
 	conn.Write(str)
 
 	buf := make([]byte, 1024)
-	for{
+	for {
 
 		n, err := conn.Read(buf)
 		if err != nil {
 			fmt.Println("read server data err:", err.Error())
 			return false, err.Error()
 		} else {
-			//M := Mess{}
-			//fmt.Println(string(buf[:n]))
-			//err = json.Unmarshal(buf[:n], &M)
-			//fmt.Println(M)
-			//var mes = M.mess
-			//return true, mes
-			M := make(map[string]interface{})
+			M := Mess{}
+			fmt.Println(string(buf[:n]))
 			err = json.Unmarshal(buf[:n], &M)
-			var mes = M["message"]
+
 			res := false
-			if  M["code"].(float64) == float64(1){
+			if M.Code == 1 {
 				res = true
 			}
-			return res, mes.(string)
+			return res, M.Message
+
 		}
 	}
-
 
 }
 
@@ -186,21 +179,21 @@ func register(conn net.Conn) (bool, string) {
 	conn.Write(str)
 
 	buf := make([]byte, 1024)
-	for{
+	for {
 
 		n, err := conn.Read(buf)
 		if err != nil {
 			fmt.Println("read server data err:", err.Error())
 			return false, err.Error()
 		} else {
-			M := make(map[string]interface{})
+			M := Mess{}
+			fmt.Println(string(buf[:n]))
 			err = json.Unmarshal(buf[:n], &M)
-			var mes = M["message"]
 			res := false
-			if  M["code"].(float64) == float64(1){
+			if M.Code == 1 {
 				res = true
 			}
-			return res, mes.(string)
+			return res, M.Message
 		}
 	}
 
