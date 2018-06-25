@@ -80,6 +80,7 @@ start:
 	fmt.Println("输入 '/' 进入聊天室和退出聊天室")
 	fmt.Println("输入 'userLists' 查看在线人列表")
 	fmt.Println("输入 'allUsers' 查看所有注册用户")
+	fmt.Println("私聊格式 'userName:消息'")
 	for {
 		n, err := os.Stdin.Read(str)
 		if err != nil {
@@ -94,6 +95,8 @@ start:
 			m["act"] = "userLists"
 		} else if string(mes) == "allUsers\n" {
 			m["act"] = "allUsers"
+		} else if string(mes) =="/\n" {
+			m["act"]= "chatRoom"
 		} else {
 			m["act"] = "message"
 			m["message"] = string(mes)

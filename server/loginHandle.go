@@ -14,11 +14,13 @@ type User struct {
 
 type Client struct {
 	C chan string  //用户发送数据的管道
-	Address string
+	ChatroomC chan string //聊天室管道
+	Address string  //ip +port
+	IsInChatRoom bool // 是否在聊天室中
 	User
 }
 
-func DealLogin(conn net.Conn, cli Client, lists map[string]Client, onlineMap map[string]Client)  {
+func DealLogin(conn net.Conn, cli Client, lists map[string]Client, onlineMap map[string]Client) bool  {
 
 	var code int
 	var mes string
@@ -53,9 +55,11 @@ func DealLogin(conn net.Conn, cli Client, lists map[string]Client, onlineMap map
 		conn.Close()
 	}
 
+	return code == 1
+
 }
 
-func DealResgister(conn net.Conn, cli Client, lists map[string]Client, onlineMap map[string]Client)  {
+func DealResgister(conn net.Conn, cli Client, lists map[string]Client, onlineMap map[string]Client) bool {
 
 	var code int
 	var mes string
@@ -88,4 +92,5 @@ func DealResgister(conn net.Conn, cli Client, lists map[string]Client, onlineMap
 	} else {
 		conn.Close()
 	}
+	return code == 1
 }
