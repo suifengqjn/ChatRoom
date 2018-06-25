@@ -11,15 +11,6 @@ import (
 	"goDemo/ChatRoom/config"
 )
 
-const (
-	Register = 1
-	Login = 2
-	Message= 3
-	UserList = 4
-
-)
-
-
 
 //保存线上用户的数据 key 为userName 用户名不允许重复
 var onlineMap map[string]server.Client
@@ -53,9 +44,7 @@ func ChatRoomMessager()  {
 
 	for  {
 		chatRoomMsg := <- chatRoomMessage
-
 		for _,client := range onlineMap  {
-			fmt.Println(">>>>>>>>>>>>>>>>>>")
 			if client.IsInChatRoom == true {
 				client.ChatroomC <- chatRoomMsg
 			}
@@ -71,7 +60,6 @@ func writeMsgToClient(cli server.Client, conn net.Conn)  {
 	for msg := range cli.C {
 		conn.Write([]byte(msg))
 	}
-
 
 }
 
@@ -157,7 +145,6 @@ func handleConn(conn net.Conn)  {
 					server.SendMessageToChatRoom(mes, cli.Username, chatRoomMessage)
 
 				}
-				//message <- makeMsg(cli, mes)
 
 			case "userLists":
 				conn.Write([]byte("user list:\n"))
@@ -200,10 +187,8 @@ func handleConn(conn net.Conn)  {
 		case <- time.After(time.Second * config.LimitTimeout):
 			delete(onlineMap, cli.Address)
 			message <- makeMsg(cli,"time out,请重新登入")
-			return 
-
+			return
 		}
-
 	}
 
 }
@@ -225,7 +210,6 @@ func main() {
 
 	// 第二个go 转发消息，只要有消息，给map每个成员发送消息
 	go Manager()
-
 
 	// 第三个go 转发聊天室消息
 	go ChatRoomMessager()

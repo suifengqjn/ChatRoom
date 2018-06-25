@@ -10,11 +10,6 @@ import (
 	"goDemo/ChatRoom/config"
 )
 
-//const (
-//	systemMes  = 1
-//	singleChat = 2
-//	roomChat   = 3
-//)
 
 var chatType int
 
