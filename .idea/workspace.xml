@@ -83,6 +83,8 @@
       <find>chatRoomMessage</find>
       <find>writeMsgToClient</find>
       <find>messagemessage</find>
+      <find>isQuit</find>
+      <find>Println</find>
     </findStrings>
   </component>
   <component name="GOROOT" path="/usr/local/Cellar/go/1.10/libexec" />
